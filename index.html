@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Revenue Managers Spain</title>
+<meta name="description" content="Revenue management para propietarios de viviendas turísticas. Calcula en 60 segundos cuánto podría facturar tu piso.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* ================= TOKENS ================= */
+:root{
+  --bg:#FFFFFF; --bg-2:#F6F6F3; --bg-3:#EDEDE8;
+  --ink:#0B0B0A; --ink-2:#55554F; --ink-3:#8C8C85; --line:#E4E4DE; --line-2:#CFCFC7;
+  --btn:#0B0B0A; --btn-ink:#FFFFFF; --btn-hover:#2A2A27;
+  --up:#0A8754; --up-soft:#E3F3EB;
+  --down:#B5620C; --down-soft:#FBEEDD;
+  --err:#C0271D;
+  --inv-bg:#0B0B0A; --inv-ink:#F4F4EF; --inv-2:#A3A39B; --inv-line:#262623; --inv-card:#151513;
+  --sans:"Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono:"Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --max:1200px;
+  --lift:0 1px 2px rgba(0,0,0,.04), 0 8px 24px -8px rgba(0,0,0,.12);
+  --float:0 2px 4px rgba(0,0,0,.04), 0 24px 60px -20px rgba(0,0,0,.28);
+  --hdr:72px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B0B0A; --bg-2:#131311; --bg-3:#1B1B19;
+    --ink:#F4F4EF; --ink-2:#AEAEA6; --ink-3:#77776F; --line:#23231F; --line-2:#34342F;
+    --btn:#F4F4EF; --btn-ink:#0B0B0A; --btn-hover:#DADAD3;
+    --up:#3CCB8A; --up-soft:#0F2A1D; --down:#F0A24E; --down-soft:#2C1D0C; --err:#FF7B72;
+    --inv-bg:#F4F4EF; --inv-ink:#0B0B0A; --inv-2:#55554F; --inv-line:#DCDCD5; --inv-card:#FFFFFF;
+    --lift:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -8px rgba(0,0,0,.6);
+    --float:0 2px 4px rgba(0,0,0,.4), 0 24px 60px -20px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B0B0A; --bg-2:#131311; --bg-3:#1B1B19;
+  --ink:#F4F4EF; --ink-2:#AEAEA6; --ink-3:#77776F; --line:#23231F; --line-2:#34342F;
+  --btn:#F4F4EF; --btn-ink:#0B0B0A; --btn-hover:#DADAD3;
+  --up:#3CCB8A; --up-soft:#0F2A1D; --down:#F0A24E; --down-soft:#2C1D0C; --err:#FF7B72;
+  --inv-bg:#F4F4EF; --inv-ink:#0B0B0A; --inv-2:#55554F; --inv-line:#DCDCD5; --inv-card:#FFFFFF;
+  --lift:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -8px rgba(0,0,0,.6);
+  --float:0 2px 4px rgba(0,0,0,.4), 0 24px 60px -20px rgba(0,0,0,.8);
+}
+
+/* ================= BASE ================= */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--ink); font:400 17px/1.55 var(--sans); -webkit-font-smoothing:antialiased; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:inherit}
+h1,h2,h3,h4{margin:0; font-weight:700; letter-spacing:-.035em; line-height:1.02; text-wrap:balance}
+p{margin:0}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums; letter-spacing:-.03em}
+.wrap{max-width:var(--max); margin-inline:auto; padding-inline:clamp(16px,4vw,40px)}
+.muted{color:var(--ink-2)}
+.faint{color:var(--ink-3)}
+.lead{font-size:clamp(18px,1.55vw,21px); line-height:1.5; color:var(--ink-2); max-width:54ch}
+:focus-visible{outline:2px solid var(--ink); outline-offset:3px; border-radius:6px}
+[id]{scroll-margin-top:calc(var(--hdr) + 16px)}
+@media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
+
+/* ================= BUTTONS ================= */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:10px; font:600 16px/1 var(--sans); letter-spacing:-.01em; padding:17px 22px; border-radius:12px; border:1px solid transparent; cursor:pointer; text-decoration:none; white-space:nowrap; transition:background .18s, color .18s, border-color .18s, transform .12s}
+.btn:active{transform:scale(.985)}
+.btn-dark{background:var(--btn); color:var(--btn-ink)}
+.btn-dark:hover{background:var(--btn-hover)}
+.btn-line{background:transparent; color:var(--ink); border-color:var(--line-2)}
+.btn-line:hover{border-color:var(--ink)}
+.btn-sm{padding:12px 16px; font-size:15px; border-radius:10px}
+.btn-block{width:100%}
+.btn .arr{display:inline-block; transition:transform .18s}
+.btn:hover .arr{transform:translateX(3px)}
+.btn[disabled]{opacity:.35; cursor:not-allowed}
+
+/* ================= HEADER ================= */
+.hdr{position:sticky; top:env(safe-area-inset-top,0px); z-index:60; background:color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter:saturate(1.6) blur(16px); -webkit-backdrop-filter:saturate(1.6) blur(16px); border-bottom:1px solid transparent; transition:border-color .2s}
+.hdr.on{border-bottom-color:var(--line)}
+.nav{height:var(--hdr); display:flex; align-items:center; gap:24px}
+.logo{display:flex; align-items:center; gap:10px; text-decoration:none; flex:none}
+.logo .mk{width:30px; height:30px; border-radius:8px; background:var(--ink); color:var(--bg); display:grid; place-items:center; font:700 12px/1 var(--mono); letter-spacing:-.04em}
+.logo .wm{font:700 16px/1.05 var(--sans); letter-spacing:-.03em}
+.logo .wm span{display:block; font:500 11px/1.2 var(--mono); letter-spacing:.06em; color:var(--ink-3); text-transform:uppercase}
+.links{display:flex; gap:2px; list-style:none; margin:0 0 0 12px; padding:0}
+.links a{display:block; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:500; font-size:15px; color:var(--ink-2); transition:color .15s, background .15s}
+.links a:hover{color:var(--ink); background:var(--bg-2)}
+.links a[aria-current="page"]{color:var(--ink)}
+.links a[aria-current="page"]::after{content:""; display:block; height:2px; background:var(--ink); border-radius:2px; margin-top:6px}
+.nav .grow{flex:1}
+.burger{display:none; width:44px; height:44px; border-radius:10px; border:1px solid var(--line-2); background:transparent; color:var(--ink); cursor:pointer; place-items:center}
+@media (max-width:880px){
+  .links, .nav .btn{display:none}
+  .burger{display:grid}
+  .links.open{display:flex; flex-direction:column; position:absolute; left:0; right:0; top:var(--hdr); margin:0; background:var(--bg); padding:8px 16px 24px; border-bottom:1px solid var(--line); box-shadow:var(--lift)}
+  .links.open a{font-size:22px; font-weight:600; padding:16px 6px; letter-spacing:-.02em; color:var(--ink)}
+  .links.open a[aria-current="page"]::after{display:none}
+}
+
+/* ================= LAYOUT ================= */
+.sec{padding-block:clamp(72px,10vw,136px)}
+.sec-sm{padding-block:clamp(48px,6vw,80px)}
+.h-sec{font-size:clamp(36px,5.2vw,68px); letter-spacing:-.045em}
+.h-sub{margin-top:18px}
+.head{display:flex; justify-content:space-between; align-items:end; gap:32px; flex-wrap:wrap; margin-bottom:clamp(36px,5vw,64px)}
+.head > div{max-width:720px}
+.page{animation:in .4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes in{from{opacity:.001; transform:translateY(6px)} to{opacity:1; transform:none}}
+.tag{display:inline-flex; align-items:center; gap:8px; font:500 13px/1 var(--mono); color:var(--ink-2); background:var(--bg-2); border:1px solid var(--line); padding:8px 12px; border-radius:999px}
+.tag i{width:7px; height:7px; border-radius:50%; background:var(--up); box-shadow:0 0 0 3px color-mix(in srgb, var(--up) 22%, transparent)}
+
+/* ================= HERO ================= */
+.hero{padding-block:clamp(40px,6vw,88px) clamp(56px,7vw,104px)}
+.hero-grid{display:grid; grid-template-columns:1.12fr .88fr; gap:clamp(36px,6vw,88px); align-items:center}
+@media (max-width:980px){ .hero-grid{grid-template-columns:1fr} }
+.hero h1{font-size:clamp(52px,8vw,112px); font-weight:800; letter-spacing:-.06em; line-height:.92; margin-top:26px}
+.hero h1 .soft{color:var(--ink-3)}
+.hero .lead{margin-top:28px}
+.proof{display:grid; grid-template-columns:repeat(3,auto); justify-content:start; gap:clamp(20px,3vw,36px); margin-top:40px; padding-top:28px; border-top:1px solid var(--line)}
+.proof div{display:grid; gap:4px}
+.proof b{font:600 22px/1 var(--mono); letter-spacing:-.04em}
+.proof span{font-size:13px; color:var(--ink-3)}
+
+/* estimator (Uber fare-style) */
+.est{background:var(--bg); border:1px solid var(--line); border-radius:24px; padding:clamp(20px,2.6vw,28px); box-shadow:var(--float)}
+.est h2{font-size:26px; letter-spacing:-.035em}
+.est p.muted{margin-top:6px; font-size:15px}
+.est-fields{margin-top:22px; border:1px solid var(--line-2); border-radius:16px; overflow:hidden; background:var(--bg-2)}
+.ef{position:relative; display:grid; grid-template-columns:36px 1fr; align-items:center; padding:0 16px 0 12px; border-bottom:1px solid var(--line-2); background:var(--bg)}
+.ef:last-child{border-bottom:0}
+.ef .ic{width:24px; height:24px; display:grid; place-items:center; color:var(--ink)}
+.ef label{position:absolute; left:48px; top:12px; font:500 12px/1 var(--sans); color:var(--ink-3)}
+.ef select, .ef input{appearance:none; -webkit-appearance:none; border:0; background:transparent; color:var(--ink); font:600 17px/1.2 var(--sans); padding:30px 0 12px; width:100%; outline:none; cursor:pointer; letter-spacing:-.01em}
+.ef input{cursor:text}
+.ef .suf{position:absolute; right:16px; bottom:13px; font:600 17px/1 var(--sans); color:var(--ink-3); pointer-events:none}
+.ef .chev{position:absolute; right:16px; bottom:16px; pointer-events:none; color:var(--ink-3)}
+.ef:focus-within{background:var(--bg-2)}
+.est .btn{margin-top:14px}
+.est-foot{display:flex; align-items:center; gap:8px; margin-top:14px; font-size:13px; color:var(--ink-3)}
+
+/* ================= STATS ROW ================= */
+.stats{display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+@media (max-width:880px){ .stats{grid-template-columns:repeat(2,1fr)} }
+.stat{padding:28px 24px 28px 0; display:grid; gap:10px}
+.stat + .stat{padding-left:24px; border-left:1px solid var(--line)}
+@media (max-width:880px){ .stat:nth-child(3){padding-left:0; border-left:0} .stat:nth-child(n+3){border-top:1px solid var(--line)} }
+.stat b{font:600 clamp(30px,3.6vw,46px)/1 var(--mono); letter-spacing:-.05em}
+.stat span{font-size:14px; color:var(--ink-2); max-width:24ch}
+.src{margin-top:14px; font-size:12px; color:var(--ink-3)}
+
+/* ================= DARK DEMO ================= */
+.inv{background:var(--inv-bg); color:var(--inv-ink)}
+.inv .muted{color:var(--inv-2)}
+.demo-grid{display:grid; grid-template-columns:.85fr 1.15fr; gap:clamp(36px,6vw,88px); align-items:center}
+@media (max-width:980px){ .demo-grid{grid-template-columns:1fr} }
+.seg-dark{display:inline-flex; padding:4px; border-radius:12px; background:var(--inv-card); border:1px solid var(--inv-line); margin-top:32px}
+.seg-dark button{border:0; background:transparent; color:var(--inv-2); font:600 15px/1 var(--sans); padding:12px 16px; border-radius:9px; cursor:pointer}
+.seg-dark button[aria-pressed="true"]{background:var(--inv-ink); color:var(--inv-bg)}
+.demo-kpis{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--inv-line); border:1px solid var(--inv-line); border-radius:16px; overflow:hidden; margin-top:28px}
+.demo-kpis div{background:var(--inv-bg); padding:20px}
+.demo-kpis span{display:block; font-size:13px; color:var(--inv-2)}
+.demo-kpis b{display:block; margin-top:8px; font:600 clamp(24px,2.6vw,32px)/1 var(--mono); letter-spacing:-.04em}
+.demo-kpis b.dn{color:var(--down)}
+.demo-kpis b.up{color:var(--up)}
+.phone{background:var(--inv-card); border:1px solid var(--inv-line); border-radius:28px; padding:clamp(16px,2.4vw,26px)}
+.ph-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px}
+.ph-top b{font-size:17px; letter-spacing:-.02em}
+.ph-top span{font:500 12px/1 var(--mono); color:var(--inv-2)}
+.dow, .grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
+.dow{margin-bottom:8px}
+.dow span{text-align:center; font:500 11px/1 var(--mono); color:var(--inv-2)}
+.cell{aspect-ratio:1/1.08; border-radius:10px; background:color-mix(in srgb, var(--inv-ink) 5%, transparent); padding:6px 7px; display:flex; flex-direction:column; justify-content:space-between; position:relative; transition:background .35s}
+.cell .d{font:500 10px/1 var(--mono); color:var(--inv-2)}
+.cell .p{font:600 clamp(10px,1.1vw,13px)/1 var(--mono); letter-spacing:-.04em}
+.cell.low{background:color-mix(in srgb, var(--down) 18%, transparent)}
+.cell.low .p{color:var(--down)}
+.cell.hi{background:color-mix(in srgb, var(--up) 16%, transparent)}
+.cell.hi .p{color:var(--up)}
+.cell .ev{position:absolute; top:6px; right:6px; width:5px; height:5px; border-radius:50%; background:var(--inv-ink)}
+.cell.off{background:transparent}
+.ph-legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:16px; font-size:12px; color:var(--inv-2)}
+.ph-legend i{display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:6px; vertical-align:0}
+
+/* ================= LEAKS ================= */
+.leaks{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2vw,24px)}
+@media (max-width:880px){ .leaks{grid-template-columns:1fr} }
+.leak{border-top:1px solid var(--ink); padding-top:24px; display:grid; gap:14px; align-content:start}
+.leak .big{font:600 clamp(40px,4.4vw,56px)/1 var(--mono); letter-spacing:-.06em; color:var(--down)}
+.leak .big small{font-size:.32em; letter-spacing:0; color:var(--ink-3); margin-left:6px; font-family:var(--sans); font-weight:500}
+.leak h3{font-size:24px; letter-spacing:-.03em}
+.leak p{color:var(--ink-2)}
+
+/* ================= CALCULATOR ================= */
+.calc-sec{background:var(--bg-2)}
+.calc{background:var(--bg); border:1px solid var(--line); border-radius:28px; box-shadow:var(--lift); overflow:hidden}
+.calc-top{display:flex; justify-content:space-between; align-items:center; gap:16px; padding:18px clamp(18px,3vw,32px); border-bottom:1px solid var(--line)}
+.bar{flex:1; max-width:360px; height:4px; background:var(--bg-3); border-radius:4px; overflow:hidden}
+.bar i{display:block; height:100%; width:33%; background:var(--ink); border-radius:4px; transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.calc-meter{font:500 13px/1 var(--mono); color:var(--ink-3); white-space:nowrap}
+.calc-body{padding:clamp(24px,4.4vw,56px) clamp(18px,3vw,32px) clamp(20px,3vw,32px)}
+.step{animation:in .35s cubic-bezier(.2,.7,.2,1) both}
+.q{font-size:clamp(28px,3.6vw,44px); letter-spacing:-.045em}
+.q-sub{margin-top:10px; color:var(--ink-2)}
+.opts{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; margin-top:30px}
+.opt{position:relative; text-align:left; border:1.5px solid var(--line); background:var(--bg); color:var(--ink); border-radius:16px; padding:18px 44px 18px 18px; cursor:pointer; font:inherit; display:grid; gap:4px; transition:border-color .15s, background .15s, box-shadow .15s}
+.opt:hover{border-color:var(--line-2); box-shadow:var(--lift)}
+.opt[aria-pressed="true"]{border-color:var(--ink); background:var(--bg-2); box-shadow:inset 0 0 0 1px var(--ink)}
+.opt strong{font-size:17px; font-weight:600; letter-spacing:-.02em}
+.opt span{font-size:14px; color:var(--ink-2); line-height:1.4}
+.opt .rad{position:absolute; top:18px; right:16px; width:20px; height:20px; border-radius:50%; border:1.5px solid var(--line-2); transition:border .15s}
+.opt[aria-pressed="true"] .rad{border:6px solid var(--ink)}
+.chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+.chips button{border:1.5px solid var(--line); background:var(--bg); color:var(--ink); border-radius:12px; padding:12px 18px; font:600 15px/1 var(--sans); cursor:pointer; min-width:56px; transition:border-color .15s, background .15s}
+.chips button:hover{border-color:var(--line-2)}
+.chips button[aria-pressed="true"]{border-color:var(--ink); background:var(--ink); color:var(--bg)}
+.fb{margin-top:36px}
+.fl{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.fl label, .fl .lbl{font:600 16px/1.3 var(--sans)}
+.fl output{font:600 clamp(30px,3.8vw,46px)/1 var(--mono); letter-spacing:-.05em}
+.hint{font-size:13px; color:var(--ink-3); margin-top:6px}
+input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:36px; background:transparent; margin-top:8px; cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px; border-radius:4px; background:linear-gradient(90deg, var(--ink) var(--fill,50%), var(--bg-3) var(--fill,50%))}
+input[type=range]::-moz-range-track{height:4px; border-radius:4px; background:var(--bg-3)}
+input[type=range]::-moz-range-progress{height:4px; border-radius:4px; background:var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:28px; height:28px; margin-top:-12px; border-radius:50%; background:var(--bg); border:1px solid var(--line-2); box-shadow:0 2px 10px rgba(0,0,0,.22)}
+input[type=range]::-moz-range-thumb{width:26px; height:26px; border-radius:50%; background:var(--bg); border:1px solid var(--line-2); box-shadow:0 2px 10px rgba(0,0,0,.22)}
+.calc-nav{display:flex; align-items:center; gap:12px; margin-top:40px; padding-top:22px; border-top:1px solid var(--line)}
+.calc-nav .back{background:none; border:0; color:var(--ink-2); font:600 15px/1 var(--sans); cursor:pointer; padding:12px 2px}
+.calc-nav .grow{flex:1}
+
+/* result */
+.res{display:grid; grid-template-columns:1.1fr .9fr; gap:clamp(28px,4.4vw,64px); align-items:start}
+@media (max-width:940px){ .res{grid-template-columns:1fr} }
+.res-k{font:500 14px/1 var(--mono); color:var(--ink-3)}
+.res-big{font:600 clamp(44px,6.4vw,84px)/.95 var(--mono); letter-spacing:-.06em; margin-top:14px; white-space:nowrap}
+.res-big small{font:500 .24em/1 var(--sans); letter-spacing:0; color:var(--ink-3); margin-left:6px}
+.delta{display:inline-flex; align-items:center; gap:8px; margin-top:16px; padding:10px 14px; border-radius:10px; background:var(--up-soft); color:var(--up); font:600 15px/1 var(--mono)}
+.rows{margin-top:26px; border-top:1px solid var(--line)}
+.row{display:flex; justify-content:space-between; align-items:baseline; gap:16px; padding:15px 0; border-bottom:1px solid var(--line)}
+.row .num{font-size:19px; font-weight:600}
+.row.dn .num{color:var(--down)}
+.scale{margin-top:30px}
+.track{position:relative; height:8px; border-radius:8px; background:linear-gradient(90deg, var(--down-soft), var(--bg-3) 50%, var(--up-soft)); margin-top:38px}
+.pin{position:absolute; top:50%; transform:translate(-50%,-50%); width:18px; height:18px; border-radius:50%; border:3px solid var(--bg); box-shadow:0 1px 5px rgba(0,0,0,.3); transition:left 1s cubic-bezier(.2,.8,.2,1)}
+.pin.now{background:var(--down)}
+.pin.pot{background:var(--up)}
+.pin b{position:absolute; bottom:22px; left:50%; transform:translateX(-50%); font:600 11px/1 var(--mono); white-space:nowrap; color:var(--ink-2)}
+.ticks{position:relative; height:34px; margin-top:10px}
+.ticks span{position:absolute; transform:translateX(-50%); font:500 11px/1.35 var(--mono); color:var(--ink-3); text-align:center; white-space:nowrap}
+.disc{margin-top:18px; font-size:13px; color:var(--ink-3); max-width:58ch}
+.gate{border:1px solid var(--line); border-radius:22px; padding:clamp(20px,3vw,30px); background:var(--bg-2)}
+.gate h3{font-size:26px; letter-spacing:-.035em}
+.gate > div > p.muted{margin-top:8px; font-size:15px}
+.form{display:grid; gap:14px; margin-top:22px}
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+@media (max-width:520px){ .row2{grid-template-columns:1fr} }
+.f{display:grid; gap:6px}
+.f label, .f .lbl{font:600 14px/1.3 var(--sans)}
+.f .o{font-weight:400; color:var(--ink-3)}
+.f input, .f textarea{font:500 16px/1.4 var(--sans); color:var(--ink); background:var(--bg); border:1.5px solid var(--line); border-radius:12px; padding:14px; width:100%; transition:border-color .15s}
+.f input:focus, .f textarea:focus{border-color:var(--ink); outline:none}
+.f .chips{margin-top:0}
+.f .chips button{padding:11px 14px; font-size:14px}
+.f.bad input{border-color:var(--err)}
+.f .err{display:none; font-size:13px; color:var(--err)}
+.f.bad .err{display:block}
+.check{display:flex; gap:12px; align-items:flex-start; font-size:13px; color:var(--ink-2); line-height:1.5; cursor:pointer}
+.check input{width:20px; height:20px; margin-top:1px; accent-color:var(--ink); flex:none}
+.check.bad{color:var(--err)}
+.hp{position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden}
+.msg{font-size:14px; padding:12px 14px; border-radius:10px; background:color-mix(in srgb, var(--err) 10%, transparent); color:var(--err)}
+.ok{display:grid; gap:16px}
+.ok .tick{width:52px; height:52px; border-radius:50%; background:var(--up); display:grid; place-items:center}
+.ok .tick::after{content:""; width:18px; height:10px; border-left:3px solid #fff; border-bottom:3px solid #fff; transform:rotate(-45deg) translate(2px,-2px)}
+.ok h3{font-size:26px}
+.nexts{list-style:none; margin:4px 0 0; padding:0; display:grid; gap:0; border-top:1px solid var(--line)}
+.nexts li{display:grid; grid-template-columns:70px 1fr; gap:12px; padding:14px 0; border-bottom:1px solid var(--line); font-size:15px}
+.nexts li span{font:500 13px/1.5 var(--mono); color:var(--ink-3)}
+
+/* ================= HOW ================= */
+.tl{display:grid; grid-template-columns:repeat(4,1fr); gap:0; list-style:none; margin:0; padding:0; position:relative}
+@media (max-width:980px){ .tl{grid-template-columns:repeat(2,1fr); row-gap:36px} }
+@media (max-width:560px){ .tl{grid-template-columns:1fr} }
+.tl li{position:relative; padding:34px 24px 0 0}
+.tl li::before{content:""; position:absolute; top:6px; left:0; right:0; height:1px; background:var(--line-2)}
+.tl li::after{content:""; position:absolute; top:0; left:0; width:13px; height:13px; border-radius:50%; background:var(--bg); border:2px solid var(--ink)}
+.tl li:last-child::after{background:var(--ink)}
+.tl .when{font:500 13px/1 var(--mono); color:var(--ink-3)}
+.tl h3{font-size:22px; letter-spacing:-.03em; margin-top:12px}
+.tl p{color:var(--ink-2); font-size:16px; margin-top:10px; max-width:30ch}
+
+/* ================= COMPARE ================= */
+.tbl{overflow-x:auto; border-radius:20px; border:1px solid var(--line)}
+table.cmp{width:100%; border-collapse:collapse; min-width:680px}
+.cmp th, .cmp td{padding:18px 20px; text-align:left; border-bottom:1px solid var(--line); font-size:15px; vertical-align:top}
+.cmp thead th{font-size:15px; font-weight:600; color:var(--ink-2); background:var(--bg-2)}
+.cmp thead th.us{background:var(--ink); color:var(--bg)}
+.cmp td.us{font-weight:600; background:var(--bg-2)}
+.cmp th[scope=row]{font-weight:500; color:var(--ink-3); width:24%}
+.cmp tr:last-child td, .cmp tr:last-child th{border-bottom:0}
+
+/* ================= FAQ ================= */
+.faq-grid{display:grid; grid-template-columns:.8fr 1.2fr; gap:clamp(28px,5vw,80px)}
+@media (max-width:880px){ .faq-grid{grid-template-columns:1fr} }
+.faq{border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:20px; padding:22px 0; font:600 18px/1.35 var(--sans); letter-spacing:-.02em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .pm{flex:none; width:28px; height:28px; border-radius:50%; border:1px solid var(--line-2); position:relative; transition:transform .25s, background .2s}
+.faq summary .pm::before, .faq summary .pm::after{content:""; position:absolute; left:50%; top:50%; width:10px; height:1.5px; background:var(--ink); transform:translate(-50%,-50%)}
+.faq summary .pm::after{transform:translate(-50%,-50%) rotate(90deg)}
+.faq details[open] .pm{transform:rotate(45deg); background:var(--bg-2)}
+.faq details p{padding:0 48px 24px 0; color:var(--ink-2)}
+.faq details p b{color:var(--ink)}
+
+/* ================= CTA ================= */
+.cta{background:var(--inv-bg); color:var(--inv-ink); border-radius:32px; padding:clamp(40px,6.4vw,88px); display:grid; grid-template-columns:1.4fr auto; gap:36px; align-items:end; position:relative; overflow:hidden}
+@media (max-width:860px){ .cta{grid-template-columns:1fr} }
+.cta h2{font-size:clamp(36px,5.2vw,72px); letter-spacing:-.05em; font-weight:800; max-width:16ch}
+.cta p{margin-top:18px; color:var(--inv-2); max-width:46ch}
+.cta .btn{background:var(--inv-ink); color:var(--inv-bg)}
+.cta .btn:hover{opacity:.9}
+.cta-grid{position:absolute; inset:auto -40px -60px auto; width:340px; display:grid; grid-template-columns:repeat(7,1fr); gap:6px; opacity:.12; pointer-events:none}
+.cta-grid i{aspect-ratio:1; border-radius:6px; border:1px solid var(--inv-ink)}
+@media (max-width:860px){ .cta-grid{display:none} }
+
+/* ================= INNER PAGES ================= */
+.ph{padding-block:clamp(56px,8vw,112px) clamp(36px,5vw,64px)}
+.ph h1{font-size:clamp(46px,7vw,96px); font-weight:800; letter-spacing:-.06em; line-height:.94; margin-top:22px; max-width:14ch}
+.ph .lead{margin-top:26px}
+.bento{display:grid; grid-template-columns:repeat(6,1fr); gap:14px}
+.bento > *{background:var(--bg-2); border:1px solid var(--line); border-radius:22px; padding:clamp(22px,3vw,34px); display:grid; gap:12px; align-content:start}
+.b-3{grid-column:span 3} .b-2{grid-column:span 2} .b-4{grid-column:span 4} .b-6{grid-column:span 6}
+@media (max-width:880px){ .bento > *{grid-column:span 6} }
+.bento h3{font-size:24px; letter-spacing:-.03em}
+.bento p{color:var(--ink-2)}
+.bento .k{font:500 12px/1 var(--mono); color:var(--ink-3)}
+.bento .dark{background:var(--inv-bg); color:var(--inv-ink); border-color:var(--inv-bg)}
+.bento .dark p{color:var(--inv-2)}
+.bento .dark .k{color:var(--inv-2)}
+.mini-chart{display:flex; align-items:end; gap:5px; height:92px; margin-top:8px}
+.mini-chart i{flex:1; border-radius:4px 4px 2px 2px; background:var(--line-2)}
+.mini-chart i.h{background:var(--up)}
+.split{display:grid; grid-template-columns:.9fr 1.1fr; gap:clamp(28px,5vw,80px); align-items:start}
+@media (max-width:880px){ .split{grid-template-columns:1fr} }
+.list{list-style:none; margin:0; padding:0; border-top:1px solid var(--line)}
+.list li{display:grid; grid-template-columns:28px 1fr; gap:14px; padding:20px 0; border-bottom:1px solid var(--line)}
+.list li svg{margin-top:3px}
+.list b{display:block; font-size:18px; letter-spacing:-.02em; font-weight:600}
+.list span{color:var(--ink-2); font-size:15px}
+.price{border:1px solid var(--line); border-radius:24px; padding:clamp(24px,3.4vw,40px); box-shadow:var(--lift); display:grid; gap:22px; background:var(--bg)}
+.price-row{display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:stretch}
+.price-row .plus{align-self:center; font:400 28px/1 var(--mono); color:var(--ink-3)}
+.pp{background:var(--bg-2); border-radius:16px; padding:20px; display:grid; gap:6px; align-content:start}
+.pp .v{font:600 28px/1.1 var(--mono); letter-spacing:-.04em}
+.pp .k{font-size:14px; color:var(--ink-2)}
+@media (max-width:560px){ .price-row{grid-template-columns:1fr} .price-row .plus{text-align:center} }
+.commit{display:grid; grid-template-columns:auto 1fr; gap:16px; align-items:start; padding:18px; border-radius:16px; background:var(--up-soft)}
+.commit b{font:600 34px/1 var(--mono); letter-spacing:-.05em; color:var(--up)}
+.commit p{font-size:15px; color:var(--ink)}
+.ph-hold{background:var(--bg-3); color:var(--ink-3); border-radius:6px; padding:1px 6px; font:500 .88em/1.4 var(--mono)}
+.manifesto{font-size:clamp(32px,4.8vw,64px); font-weight:700; letter-spacing:-.05em; line-height:1.05; max-width:20ch}
+.manifesto .soft{color:var(--ink-3)}
+.vals{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2vw,24px)}
+@media (max-width:880px){ .vals{grid-template-columns:1fr} }
+.vals article{border-top:1px solid var(--ink); padding-top:24px; display:grid; gap:12px; align-content:start}
+.vals h3{font-size:24px; letter-spacing:-.03em}
+.vals p{color:var(--ink-2)}
+.team{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2vw,24px)}
+@media (max-width:880px){ .team{grid-template-columns:1fr 1fr} }
+@media (max-width:520px){ .team{grid-template-columns:1fr} }
+.member{display:grid; gap:12px}
+.member .pic{aspect-ratio:4/5; border-radius:20px; background:var(--bg-2); border:1px dashed var(--line-2); display:grid; place-items:center; font:500 13px/1.4 var(--mono); color:var(--ink-3); text-align:center}
+.member h3{font-size:20px; letter-spacing:-.02em}
+.member p{color:var(--ink-2); font-size:15px}
+.big{font-size:clamp(52px,8.4vw,128px); font-weight:800; letter-spacing:-.065em; line-height:.9}
+.big .soft{color:var(--ink-3)}
+.contact-grid{display:grid; grid-template-columns:.95fr 1.05fr; gap:clamp(28px,5vw,80px); align-items:start}
+@media (max-width:940px){ .contact-grid{grid-template-columns:1fr} }
+.card{border:1px solid var(--line); border-radius:28px; padding:clamp(22px,3.4vw,40px); box-shadow:var(--float); background:var(--bg)}
+.chans{display:grid; gap:10px; margin-top:32px}
+.chan{display:flex; justify-content:space-between; align-items:center; gap:16px; padding:18px 20px; border:1px solid var(--line); border-radius:16px; text-decoration:none; transition:border-color .15s, background .15s}
+a.chan:hover{border-color:var(--ink); background:var(--bg-2)}
+.chan b{display:block; font-size:17px; font-weight:600; letter-spacing:-.02em}
+.chan span{font-size:14px; color:var(--ink-2)}
+.promise{display:flex; gap:24px; flex-wrap:wrap; margin-top:28px}
+.promise div{display:grid; gap:2px}
+.promise b{font:600 20px/1 var(--mono); letter-spacing:-.04em}
+.promise span{font-size:13px; color:var(--ink-3)}
+
+/* ================= FOOTER ================= */
+.foot{border-top:1px solid var(--line); padding-block:56px 40px}
+.foot-grid{display:grid; grid-template-columns:1.5fr repeat(3,1fr); gap:28px}
+@media (max-width:760px){ .foot-grid{grid-template-columns:1fr 1fr} }
+.foot h4{font:500 12px/1 var(--mono); letter-spacing:.04em; color:var(--ink-3); margin-bottom:16px; text-transform:uppercase}
+.foot ul{list-style:none; margin:0; padding:0; display:grid; gap:10px}
+.foot a{text-decoration:none; color:var(--ink-2); font-size:15px}
+.foot a:hover{color:var(--ink)}
+.foot-b{display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:48px; padding-top:24px; border-top:1px solid var(--line); font-size:13px; color:var(--ink-3)}
+.theme{background:none; border:1px solid var(--line-2); color:var(--ink-2); border-radius:8px; padding:8px 12px; font:500 12px/1 var(--mono); cursor:pointer}
+
+/* floating mobile CTA */
+.mcta{display:none}
+@media (max-width:880px){
+  .mcta{display:flex; position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom,0px)); z-index:50; box-shadow:0 12px 32px -8px rgba(0,0,0,.45); transition:transform .3s, opacity .3s}
+  .mcta.hide{transform:translateY(140%); opacity:0; pointer-events:none}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr" id="hdr">
+  <nav class="wrap nav" aria-label="Principal">
+    <a href="#/inicio" class="logo" aria-label="Revenue Managers Spain, inicio"><span class="mk" aria-hidden="true">RM</span><span class="wm">Revenue Managers<span>Spain</span></span></a>
+    <ul class="links" id="links">
+      <li><a href="#/inicio" data-route="inicio">Inicio</a></li>
+      <li><a href="#/servicio" data-route="servicio">Servicio</a></li>
+      <li><a href="#/nosotros" data-route="nosotros">Nosotros</a></li>
+      <li><a href="#/contacto" data-route="contacto">Contacto</a></li>
+    </ul>
+    <span class="grow"></span>
+    <a href="#/inicio/calculadora" class="btn btn-dark btn-sm">Calcular mi potencial</a>
+    <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="links">
+      <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><path d="M0 1h18M0 6h18M0 11h18" stroke="currentColor" stroke-width="1.6"/></svg>
+    </button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============================ INICIO ============================ -->
+<div class="page" data-page="inicio">
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="tag"><i aria-hidden="true"></i>Operando en Bilbao y Bizkaia</span>
+        <h1>Cobra lo que vale tu piso. <span class="soft">Cada noche.</span></h1>
+        <p class="lead">Ponemos precio a cada noche de tu vivienda turística con datos del mercado, como hacen los grandes hoteles. Tú sigues con tu gestora, tus llaves y tus huéspedes.</p>
+        <div class="proof">
+          <div><b class="num">60 s</b><span>para tu estimación</span></div>
+          <div><b class="num">365</b><span>precios al año, no uno</span></div>
+          <div><b class="num">0</b><span>permanencia</span></div>
+        </div>
+      </div>
+
+      <form class="est" id="est" novalidate>
+        <h2>¿Cuánto podría facturar tu piso?</h2>
+        <p class="muted">Empieza aquí. Terminas en 60 segundos.</p>
+        <div class="est-fields">
+          <div class="ef">
+            <span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+            <label for="eZona">Zona</label>
+            <select id="eZona">
+              <option value="abando">Abando · Indautxu</option>
+              <option value="casco">Casco Viejo · Bilbao La Vieja</option>
+              <option value="bilbao_otro">Otro barrio de Bilbao</option>
+              <option value="costa">Costa de Bizkaia</option>
+              <option value="euskadi">Otro municipio de Euskadi</option>
+            </select>
+            <svg class="chev" width="12" height="8" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </div>
+          <div class="ef">
+            <span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 18h18M3 14h18M6 10V7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v3"/></svg></span>
+            <label for="eDorm">Dormitorios</label>
+            <select id="eDorm"><option value="1">1 dormitorio</option><option value="2" selected>2 dormitorios</option><option value="3">3 dormitorios</option><option value="4">4 o más</option></select>
+            <svg class="chev" width="12" height="8" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </div>
+          <div class="ef">
+            <span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 6.5A6.5 6.5 0 1 0 17 17.5M4 10h9M4 14h9"/></svg></span>
+            <label for="ePrecio">Precio medio por noche</label>
+            <input id="ePrecio" type="number" inputmode="numeric" min="40" max="400" step="5" value="120">
+            <span class="suf">€</span>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-dark btn-block">Ver mi potencial <span class="arr" aria-hidden="true">→</span></button>
+        <p class="est-foot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Sin registro. Los datos de contacto, solo si quieres el informe.</p>
+      </form>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><b>974</b><span>pisos turísticos activos en Bilbao</span></div>
+      <div class="stat"><b>180 €</b><span>precio medio por noche en la ciudad</span></div>
+      <div class="stat"><b>22.110 €</b><span>o menos al año factura el 25 % que peor lo hace</span></div>
+      <div class="stat"><b>44.839 €</b><span>al año factura el piso mediano</span></div>
+    </div>
+    <p class="src">Mercado de Bilbao, sept. 2025 – ago. 2026. Fuente: GuestFavorites.</p>
+  </div>
+
+  <section class="sec inv" style="margin-top:clamp(72px,10vw,136px)">
+    <div class="wrap demo-grid">
+      <div>
+        <h2 class="h-sec">El mismo mes. Dos maneras de venderlo.</h2>
+        <p class="lead muted h-sub">Julio en un piso de 2 dormitorios en Abando. Con precio fijo el calendario se llena, pero las mejores noches se venden baratas. Cambia de modo y compara.</p>
+        <div class="seg-dark" role="group" aria-label="Modo de precio">
+          <button type="button" id="tFix" aria-pressed="true">Precio fijo</button>
+          <button type="button" id="tDyn" aria-pressed="false">Precio por noche</button>
+        </div>
+        <div class="demo-kpis">
+          <div><span>Facturación de julio</span><b class="num" id="calTotal">—</b></div>
+          <div><span id="calDeltaK">Noches vendidas baratas</span><b class="num dn" id="calDelta">—</b></div>
+        </div>
+      </div>
+      <div class="phone" aria-label="Calendario de ejemplo">
+        <div class="ph-top"><b>Julio</b><span>Ejemplo ilustrativo</span></div>
+        <div class="dow" aria-hidden="true"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+        <div class="grid" id="calGrid"></div>
+        <div class="ph-legend">
+          <span><i style="background:var(--down)"></i>Por debajo de mercado</span>
+          <span><i style="background:var(--up)"></i>Precio ajustado</span>
+          <span><i style="background:var(--inv-ink); border-radius:50%"></i>Evento en la ciudad</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <h2 class="h-sec">Tres fugas que no se ven en el calendario.</h2>
+          <p class="lead h-sub">Un calendario lleno tranquiliza, pero no dice si has cobrado lo que tocaba.</p>
+        </div>
+      </div>
+      <div class="leaks">
+        <article class="leak"><p class="big num">−70 €<small>por noche</small></p><h3>El mismo precio todo el año</h3><p>Un sábado de julio y un martes de febrero no valen lo mismo. Con precio fijo, o regalas las noches caras o no vendes las baratas.</p></article>
+        <article class="leak"><p class="big num">−170 €<small>por noche</small></p><h3>Eventos vendidos meses antes</h3><p>Conciertos, partidos en San Mamés, congresos en el Euskalduna. Esas noches se reservan pronto y al precio de un día cualquiera.</p></article>
+        <article class="leak"><p class="big num">−35 %<small>de golpe</small></p><h3>Descuentos a ciegas</h3><p>El hueco de dentro de tres días asusta y se malvende. A veces conviene bajar y otras esperar. Sin datos, es lotería.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CALCULADORA ===== -->
+  <section class="sec calc-sec" id="calculadora">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <h2 class="h-sec">Tu potencial, en 3 pasos.</h2>
+          <p class="lead h-sub">Tres preguntas. Al final verás cuánto factura hoy tu piso, cuánto podría facturar y dónde está frente al resto de Bilbao.</p>
+        </div>
+      </div>
+
+      <div class="calc" id="calc">
+        <div class="calc-top">
+          <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+          <span class="calc-meter" id="calcMeter">1 / 3 · Zona</span>
+        </div>
+        <div class="calc-body">
+
+          <div class="step" data-step="1">
+            <h3 class="q">¿Dónde está tu alojamiento?</h3>
+            <p class="q-sub">Cada zona tiene su propio precio de mercado.</p>
+            <div class="opts" id="zonaOpts">
+              <button type="button" class="opt" data-v="abando" aria-pressed="false"><i class="rad"></i><strong>Abando · Indautxu</strong><span>Centro, Gran Vía, zona Guggenheim</span></button>
+              <button type="button" class="opt" data-v="casco" aria-pressed="false"><i class="rad"></i><strong>Casco Viejo · Bilbao La Vieja</strong><span>Siete Calles, San Francisco</span></button>
+              <button type="button" class="opt" data-v="bilbao_otro" aria-pressed="false"><i class="rad"></i><strong>Otro barrio de Bilbao</strong><span>Deusto, Santutxu, Rekalde…</span></button>
+              <button type="button" class="opt" data-v="costa" aria-pressed="false"><i class="rad"></i><strong>Costa de Bizkaia</strong><span>Getxo, Sopela, Bakio, Mundaka</span></button>
+              <button type="button" class="opt" data-v="euskadi" aria-pressed="false"><i class="rad"></i><strong>Otro municipio de Euskadi</strong><span>Donostia, Vitoria-Gasteiz y resto</span></button>
+            </div>
+          </div>
+
+          <div class="step" data-step="2" hidden>
+            <h3 class="q">Cuéntanos cómo es tu piso.</h3>
+            <p class="q-sub">A ojo vale. Piensa en el último año.</p>
+            <div class="fb">
+              <div class="fl"><span class="lbl" id="dormLbl">Dormitorios</span></div>
+              <div class="chips" id="dormSeg" role="group" aria-labelledby="dormLbl">
+                <button type="button" data-v="1" aria-pressed="false">1</button>
+                <button type="button" data-v="2" aria-pressed="true">2</button>
+                <button type="button" data-v="3" aria-pressed="false">3</button>
+                <button type="button" data-v="4" aria-pressed="false">4+</button>
+              </div>
+            </div>
+            <div class="fb">
+              <div class="fl"><label for="precio">Precio medio por noche</label><output id="precioOut" for="precio" class="num">120 €</output></div>
+              <input type="range" id="precio" min="40" max="400" step="5" value="120">
+              <p class="hint">La media de Bilbao está en 180 €.</p>
+            </div>
+            <div class="fb">
+              <div class="fl"><label for="ocup">Noches ocupadas al año</label><output id="ocupOut" for="ocup" class="num">70 %</output></div>
+              <input type="range" id="ocup" min="20" max="98" step="1" value="70">
+              <p class="hint" id="ocupHint">≈ 256 noches. La media de Bilbao está en el 68 %.</p>
+            </div>
+          </div>
+
+          <div class="step" data-step="3" hidden>
+            <h3 class="q">¿Cómo decides hoy el precio de cada noche?</h3>
+            <p class="q-sub">Aquí está casi toda la diferencia.</p>
+            <div class="opts" id="metodoOpts">
+              <button type="button" class="opt" data-v="fijo" aria-pressed="false"><i class="rad"></i><strong>Precio fijo o por temporadas</strong><span>Lo toco pocas veces al año</span></button>
+              <button type="button" class="opt" data-v="manual" aria-pressed="false"><i class="rad"></i><strong>A mano, cuando puedo</strong><span>Miro a la competencia de vez en cuando</span></button>
+              <button type="button" class="opt" data-v="plataforma" aria-pressed="false"><i class="rad"></i><strong>Lo que sugiere Airbnb o Booking</strong><span>Precio inteligente de la plataforma</span></button>
+              <button type="button" class="opt" data-v="gestora" aria-pressed="false"><i class="rad"></i><strong>Lo decide mi gestora</strong><span>No sé muy bien con qué criterio</span></button>
+              <button type="button" class="opt" data-v="dinamica" aria-pressed="false"><i class="rad"></i><strong>Herramienta de precios dinámicos</strong><span>PriceLabs, Beyond, Wheelhouse…</span></button>
+              <button type="button" class="opt" data-v="nose" aria-pressed="false"><i class="rad"></i><strong>No lo sé</strong><span>Nunca me lo había planteado</span></button>
+            </div>
+          </div>
+
+          <div class="step" data-step="4" hidden>
+            <div class="res">
+              <div>
+                <p class="res-k">Tu potencial estimado</p>
+                <p class="res-big num"><span id="rPot">0 €</span><small>/ año</small></p>
+                <span class="delta" id="rDelta">+0 %</span>
+                <div class="rows">
+                  <div class="row"><span>Lo que facturas hoy (estimado)</span><span class="num" id="rNow">—</span></div>
+                  <div class="row dn"><span>Lo que se queda sobre la mesa</span><span class="num" id="rGap">—</span></div>
+                  <div class="row"><span>Al mes, de media</span><span class="num" id="rMonth">—</span></div>
+                </div>
+                <div class="scale" aria-label="Tu posición frente al mercado de Bilbao">
+                  <p class="muted" style="font-size:15px" id="rPos">—</p>
+                  <div class="track">
+                    <span class="pin now" id="pinNow" style="left:2%"><b>Hoy</b></span>
+                    <span class="pin pot" id="pinPot" style="left:2%"><b>Potencial</b></span>
+                  </div>
+                  <div class="ticks" id="ticks"></div>
+                </div>
+                <p class="disc">Estimación orientativa con datos de mercado de Bilbao (sept. 2025 – ago. 2026). El informe real se hace con el calendario y el anuncio de tu piso.</p>
+              </div>
+
+              <div class="gate">
+                <div id="gateForm">
+                  <h3>Recibe el informe real de tu piso</h3>
+                  <p class="muted">Lo preparamos con tu anuncio y te lo explicamos en una videollamada de 20 minutos. Gratis.</p>
+                  <form class="form" id="leadForm" novalidate>
+                    <div class="row2">
+                      <div class="f" data-f="nombre"><label for="lNombre">Nombre</label><input id="lNombre" autocomplete="name"><span class="err">Escribe tu nombre.</span></div>
+                      <div class="f" data-f="telefono"><label for="lTel">Teléfono</label><input id="lTel" type="tel" autocomplete="tel" inputmode="tel" placeholder="600 000 000"><span class="err">Revisa el teléfono.</span></div>
+                    </div>
+                    <div class="f" data-f="email"><label for="lEmail">Email</label><input id="lEmail" type="email" autocomplete="email"><span class="err">Revisa el email.</span></div>
+                    <div class="f" data-f="registro"><span class="lbl" id="regLbl">¿Tiene número de registro turístico del Gobierno Vasco?</span>
+                      <div class="chips" id="regSeg" role="group" aria-labelledby="regLbl"><button type="button" data-v="si" aria-pressed="false">Sí</button><button type="button" data-v="tramite" aria-pressed="false">En trámite</button><button type="button" data-v="no" aria-pressed="false">No</button></div>
+                      <span class="err">Elige una opción.</span></div>
+                    <div class="f" data-f="n_alojamientos"><span class="lbl" id="alLbl">¿Cuántos alojamientos tienes o gestionas?</span>
+                      <div class="chips" id="alSeg" role="group" aria-labelledby="alLbl"><button type="button" data-v="1" aria-pressed="false">1</button><button type="button" data-v="2-3" aria-pressed="false">2-3</button><button type="button" data-v="4-10" aria-pressed="false">4-10</button><button type="button" data-v="10+" aria-pressed="false">Más de 10</button></div>
+                      <span class="err">Elige una opción.</span></div>
+                    <div class="f"><label for="lAnuncio">Enlace a tu anuncio <span class="o">(opcional, acelera el informe)</span></label><input id="lAnuncio" placeholder="airbnb.es/rooms/… o nombre del alojamiento"></div>
+                    <div class="f"><span class="lbl" id="frLbl">¿Cuándo te llamamos?</span>
+                      <div class="chips" id="frSeg" role="group" aria-labelledby="frLbl"><button type="button" data-v="manana" aria-pressed="true">Mañana</button><button type="button" data-v="mediodia" aria-pressed="false">Mediodía</button><button type="button" data-v="tarde" aria-pressed="false">Tarde</button></div></div>
+                    <div class="hp" aria-hidden="true"><label for="lWeb">Web</label><input id="lWeb" tabindex="-1" autocomplete="off"></div>
+                    <label class="check" id="lConsentWrap"><input type="checkbox" id="lConsent"><span id="lConsentTxt">Acepto que Revenue Managers Spain y su partner comercial traten mis datos para preparar el informe y contactarme por teléfono, WhatsApp o email sobre este servicio, según la <a href="#/privacidad">política de privacidad</a>.</span></label>
+                    <p class="msg" id="leadMsg" hidden></p>
+                    <button type="submit" class="btn btn-dark btn-block" id="leadBtn"><span>Quiero mi informe gratuito</span> <span class="arr" aria-hidden="true">→</span></button>
+                  </form>
+                </div>
+                <div class="ok" id="gateOk" hidden>
+                  <span class="tick" aria-hidden="true"></span>
+                  <h3 id="okTitle">Recibido.</h3>
+                  <p class="muted" id="okText">Te llamaremos en menos de 24 horas laborables.</p>
+                  <ol class="nexts">
+                    <li><span>Hoy</span>Llamada de 5 minutos para confirmar tres datos y agendar.</li>
+                    <li><span>+24 h</span>Analizamos tu anuncio y tu calendario frente al mercado.</li>
+                    <li><span>+48 h</span>Videollamada de 20 minutos con tu informe y las cifras.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-nav" id="calcNav">
+            <button type="button" class="back" id="backBtn" hidden>← Atrás</button>
+            <span class="grow"></span>
+            <button type="button" class="btn btn-dark" id="nextBtn" disabled><span>Siguiente</span> <span class="arr" aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="como-funciona">
+    <div class="wrap">
+      <div class="head"><div><h2 class="h-sec">De tu informe al precio diario, en dos semanas.</h2></div></div>
+      <ol class="tl">
+        <li><span class="when">Día 1</span><h3>Informe gratuito</h3><p>Tu anuncio y tu último año frente a los pisos comparables de tu zona.</p></li>
+        <li><span class="when">Días 2 – 7</span><h3>Estrategia</h3><p>Precio base, mínimos, estancias y el calendario de eventos de tu zona.</p></li>
+        <li><span class="when">Desde el día 14</span><h3>Precio cada día</h3><p>Ajustamos cada noche en Airbnb, Booking y tu canal directo.</p></li>
+        <li><span class="when">Cada mes</span><h3>Informe claro</h3><p>Qué has facturado, frente a qué y qué decidimos. Sin letra pequeña.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <div class="head"><div><h2 class="h-sec">Tres formas de llevar el precio.</h2></div></div>
+      <div class="tbl">
+        <table class="cmp">
+          <thead><tr><th scope="col"></th><th scope="col">Tú solo</th><th scope="col">Gestora tradicional</th><th scope="col" class="us">Revenue Managers Spain</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Quién decide el precio</th><td>Tú, cuando te acuerdas</td><td>La gestora, sin explicarte cómo</td><td class="us">Nosotros, con datos, y te lo contamos</td></tr>
+            <tr><th scope="row">Ajuste de precios</th><td>Unas pocas veces al año</td><td>Variable</td><td class="us">Cada día</td></tr>
+            <tr><th scope="row">Eventos de la ciudad</th><td>Si te enteras a tiempo</td><td>Depende</td><td class="us">Calendario propio de Bilbao y Bizkaia</td></tr>
+            <tr><th scope="row">Te enseña los números</th><td>—</td><td>Rara vez</td><td class="us">Informe mensual</td></tr>
+            <tr><th scope="row">Compatible con tu gestora</th><td>—</td><td>—</td><td class="us">Sí, solo tocamos el precio</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0" id="faq">
+    <div class="wrap faq-grid">
+      <div><h2 class="h-sec">Preguntas antes de empezar.</h2><p class="lead h-sub">¿No encuentras la tuya? <a href="#/contacto">Escríbenos</a>.</p></div>
+      <div class="faq">
+        <details><summary>¿Hay permanencia?<i class="pm" aria-hidden="true"></i></summary><p><b>No, ninguna.</b> Puedes irte cuando quieras. Eso sí, te recomendamos con fuerza darnos un mínimo de 3 meses: el primer mes ya verás cambios, pero hace falta un trimestre para comparar con datos fiables y ver el resultado completo.</p></details>
+        <details><summary>¿Tengo que dejar a mi gestora?<i class="pm" aria-hidden="true"></i></summary><p>No. Nos ocupamos solo del precio y de la estrategia de venta. Limpieza, llaves y huéspedes siguen como están.</p></details>
+        <details><summary>¿Tenéis acceso a mi dinero?<i class="pm" aria-hidden="true"></i></summary><p>No. Solo a lo necesario para ajustar precios en tus anuncios. Los cobros siguen llegando a tu cuenta.</p></details>
+        <details><summary>¿Con qué plataformas trabajáis?<i class="pm" aria-hidden="true"></i></summary><p>Airbnb, Booking.com y Vrbo, además de tu web o canal directo si lo tienes.</p></details>
+        <details><summary>Mi piso no tiene registro turístico. ¿Podéis ayudarme?<i class="pm" aria-hidden="true"></i></summary><p>Trabajamos solo con alojamientos inscritos en el registro turístico de Euskadi. Si está en trámite, preparamos la estrategia para cuando esté listo.</p></details>
+        <details><summary>¿Cuánto cuesta?<i class="pm" aria-hidden="true"></i></summary><p>Una cuota fija por alojamiento y una parte variable ligada a la mejora frente a tu año anterior. Te damos la cifra exacta en la videollamada, con tu informe delante.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <div class="cta">
+        <div><h2>Descubre lo que tu piso está dejando de ganar.</h2><p>60 segundos para la estimación. 20 minutos para el informe real.</p></div>
+        <a href="#/inicio/calculadora" class="btn">Empezar ahora <span class="arr" aria-hidden="true">→</span></a>
+        <div class="cta-grid" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================ SERVICIO ============================ -->
+<div class="page" data-page="servicio" hidden>
+  <section class="ph">
+    <div class="wrap">
+      <span class="tag"><i aria-hidden="true"></i>Revenue management</span>
+      <h1>Nos ocupamos del número que más dinero mueve.</h1>
+      <p class="lead">Fijamos el precio de cada noche, las estancias mínimas y la antelación para que tu piso facture lo que vale en cada fecha. Tú mantienes el control y ves cada decisión.</p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:36px">
+        <a href="#/inicio/calculadora" class="btn btn-dark">Calcular mi potencial <span class="arr" aria-hidden="true">→</span></a>
+        <a href="#/servicio/tarifas" class="btn btn-line">Cómo cobramos</a>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-bottom:clamp(72px,10vw,136px)">
+    <div class="wrap bento">
+      <article class="b-4 dark"><p class="k">Precio diario</p><h3>Cada noche, su precio.</h3><p>Revisamos tu calendario a diario y ajustamos según la demanda, la competencia cercana y la antelación de la reserva.</p>
+        <div class="mini-chart" aria-hidden="true"><i style="height:38%"></i><i style="height:44%"></i><i style="height:40%"></i><i style="height:52%"></i><i class="h" style="height:78%"></i><i class="h" style="height:92%"></i><i style="height:48%"></i><i style="height:41%"></i><i style="height:46%"></i><i style="height:43%"></i><i style="height:55%"></i><i class="h" style="height:84%"></i><i class="h" style="height:100%"></i><i style="height:50%"></i></div></article>
+      <article class="b-2"><p class="k">Eventos</p><h3>Calendario de la ciudad</h3><p>Conciertos, partidos y congresos marcados con meses de antelación.</p></article>
+      <article class="b-2"><p class="k">Reglas de venta</p><h3>Estancias y huecos</h3><p>Mínimos por temporada, descuentos semanales y estrategia para huecos de una noche.</p></article>
+      <article class="b-2"><p class="k">Anuncio</p><h3>Conversión</h3><p>Título, fotos y descripción que hacen que quien ve tu piso, reserve.</p></article>
+      <article class="b-2"><p class="k">Informe mensual</p><h3>Números claros</h3><p>Facturación, ocupación y precio medio frente a tu año anterior y al mercado.</p></article>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0">
+    <div class="wrap split">
+      <div><h2 class="h-sec">Todo lo que afecta a tu facturación. Nada más.</h2><p class="lead h-sub">No hacemos limpiezas ni entregamos llaves. Hacemos una cosa, y la hacemos cada día.</p></div>
+      <ul class="list">
+        <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="var(--up-soft)"/><path d="M6 10.5l2.5 2.5L14 7.5" fill="none" stroke="var(--up)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Informe inicial de rentabilidad</b><span>Tu posición real frente a los pisos comparables de tu zona.</span></div></li>
+        <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="var(--up-soft)"/><path d="M6 10.5l2.5 2.5L14 7.5" fill="none" stroke="var(--up)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Precios configurados en tus canales</b><span>Airbnb, Booking.com, Vrbo y canal directo.</span></div></li>
+        <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="var(--up-soft)"/><path d="M6 10.5l2.5 2.5L14 7.5" fill="none" stroke="var(--up)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Ajuste diario de tarifas</b><span>Con datos de mercado, no con intuición.</span></div></li>
+        <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="var(--up-soft)"/><path d="M6 10.5l2.5 2.5L14 7.5" fill="none" stroke="var(--up)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Informe y llamada mensual</b><span>Qué ha pasado, por qué y qué haremos el mes siguiente.</span></div></li>
+        <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="var(--up-soft)"/><path d="M6 10.5l2.5 2.5L14 7.5" fill="none" stroke="var(--up)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Una persona por WhatsApp</b><span>Alguien que conoce tu piso, no un centro de atención.</span></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0" id="tarifas">
+    <div class="wrap split">
+      <div><h2 class="h-sec">Ganamos más solo si tú ganas más.</h2><p class="lead h-sub">Una parte fija pequeña por el trabajo diario y una parte variable que solo se cobra sobre la mejora frente a tu año anterior.</p></div>
+      <div class="price">
+        <div class="price-row">
+          <div class="pp"><p class="v"><span class="ph-hold">[X] €</span></p><p class="k">al mes por alojamiento</p></div>
+          <span class="plus" aria-hidden="true">+</span>
+          <div class="pp"><p class="v"><span class="ph-hold">[Y] %</span></p><p class="k">de lo que facturas por encima del año anterior</p></div>
+        </div>
+        <div class="commit"><b>0</b><p><strong>Sin permanencia.</strong> Recomendamos un mínimo de 3 meses: los cambios se notan desde el primer mes, pero el resultado completo se ve en un trimestre.</p></div>
+        <p class="faint" style="font-size:14px">Si un mes no mejoras frente al mismo mes del año anterior, no pagas la parte variable.</p>
+        <a href="#/inicio/calculadora" class="btn btn-dark">Ver cuánto podría mejorar mi piso <span class="arr" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0">
+    <div class="wrap bento">
+      <article class="b-3"><p class="k">Con gestora</p><h3>Trabajamos a su lado</h3><p>Ella opera el piso, nosotros el precio. Muchas gestoras llenan bien el calendario pero no tienen a nadie dedicado a la tarifa.</p></article>
+      <article class="b-3"><p class="k">Sin gestora</p><h3>Te quitamos lo más difícil</h3><p>Si lo llevas tú, te liberamos de la decisión que más tiempo y más dinero cuesta.</p></article>
+      <article class="b-3"><p class="k">Pequeñas gestoras</p><h3>Tu departamento de revenue</h3><p>Si gestionas de 4 a 50 alojamientos, trabajamos como tu equipo de revenue externo, con informes por propietario.</p></article>
+      <article class="b-3 dark"><p class="k">Solo pisos legales</p><h3>Registro turístico en regla</h3><p>Trabajamos únicamente con alojamientos inscritos en el registro turístico. Así protegemos tu inversión y la nuestra.</p></article>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0"><div class="wrap"><div class="cta"><div><h2>Empieza por tu informe gratuito.</h2><p>Te decimos dónde estás y cuánto hay en juego. Después decides.</p></div><a href="#/inicio/calculadora" class="btn">Calcular mi potencial <span class="arr" aria-hidden="true">→</span></a><div class="cta-grid" aria-hidden="true"></div></div></div></section>
+</div>
+
+<!-- ============================ NOSOTROS ============================ -->
+<div class="page" data-page="nosotros" hidden>
+  <section class="ph">
+    <div class="wrap">
+      <span class="tag"><i aria-hidden="true"></i>Empezamos en Bilbao</span>
+      <h1>Cerrar la brecha entre lo que cobras y lo que vale.</h1>
+      <p class="lead">En la misma ciudad, un piso turístico factura 22.000 € al año y otro, 45.000 €. Muchas veces la diferencia no está en el piso: está en quién decide el precio y con qué información.</p>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0">
+    <div class="wrap"><p class="manifesto">Los hoteles llevan décadas poniendo precio a cada noche con datos. <span class="soft">Los propietarios merecen lo mismo, explicado sin jerga.</span></p></div>
+  </section>
+
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <div class="head"><div><h2 class="h-sec">Tres principios.</h2></div></div>
+      <div class="vals">
+        <article><h3>Transparencia</h3><p>Cada cambio de precio tiene una razón y te la contamos. Si algo no funciona, lo verás en el informe antes de que tengamos que explicarlo.</p></article>
+        <article><h3>Incentivos alineados</h3><p>La mayor parte de lo que cobramos depende de lo que mejoras. Si tu piso no gana más, nosotros tampoco.</p></article>
+        <article><h3>Conocimiento local</h3><p>Conocemos el calendario de cada ciudad en la que trabajamos: sus eventos, su temporada y su normativa. Nada de plantillas.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <div class="head"><div><h2 class="h-sec">Quién está detrás.</h2></div></div>
+      <div class="team">
+        <div class="member"><div class="pic">[Foto]</div><h3><span class="ph-hold">[Nombre Apellido]</span></h3><p>Dirección y crecimiento. Contacto para gestoras y carteras de varios pisos.</p></div>
+        <div class="member"><div class="pic">[Foto]</div><h3><span class="ph-hold">[Nombre Apellido]</span></h3><p>Revenue manager. Precios y análisis de mercado, calendario a calendario.</p></div>
+        <div class="member"><div class="pic">[Foto]</div><h3><span class="ph-hold">[Nombre Apellido]</span></h3><p>Atención a propietarios. Te acompaña desde el informe y te llama cada mes.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0"><div class="wrap"><div class="cta"><div><h2>La mejor presentación es tu propio informe.</h2><p>Déjanos analizar tu piso y juzga tú.</p></div><a href="#/contacto" class="btn">Hablar con nosotros <span class="arr" aria-hidden="true">→</span></a><div class="cta-grid" aria-hidden="true"></div></div></div></section>
+</div>
+
+<!-- ============================ CONTACTO ============================ -->
+<div class="page" data-page="contacto" hidden>
+  <section class="ph" style="padding-bottom:clamp(28px,4vw,48px)">
+    <div class="wrap">
+      <h2 class="big">Tu piso puede facturar más. <span class="soft">Hablemos esta semana.</span></h2>
+    </div>
+  </section>
+
+  <section style="padding-bottom:clamp(72px,10vw,136px)">
+    <div class="wrap contact-grid">
+      <div>
+        <p class="lead">Déjanos tus datos y te llamamos en menos de 24 horas laborables. O calcula antes tu potencial en 60 segundos.</p>
+        <div class="promise">
+          <div><b>&lt; 24 h</b><span>respuesta</span></div>
+          <div><b>20 min</b><span>videollamada</span></div>
+          <div><b>0 €</b><span>el informe</span></div>
+        </div>
+        <div class="chans">
+          <a class="chan" href="#/inicio/calculadora"><div><b>Calculadora de potencial</b><span>3 pasos, sin registro</span></div><span aria-hidden="true">→</span></a>
+          <a class="chan" href="https://wa.me/34000000000" target="_blank" rel="noopener"><div><b>WhatsApp</b><span class="ph-hold">[+34 000 000 000]</span></div><span aria-hidden="true">↗</span></a>
+          <a class="chan" href="mailto:hola@revenuemanagers.es"><div><b>Email</b><span class="ph-hold">[hola@revenuemanagers.es]</span></div><span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div id="cFormWrap">
+          <h3 style="font-size:28px; letter-spacing:-.04em">Pide tu informe gratuito</h3>
+          <p class="muted" style="margin-top:8px; font-size:15px">Un minuto. Te llamamos nosotros.</p>
+          <form class="form" id="contactForm" novalidate>
+            <div class="row2">
+              <div class="f" data-f="nombre"><label for="cNombre">Nombre</label><input id="cNombre" autocomplete="name"><span class="err">Escribe tu nombre.</span></div>
+              <div class="f" data-f="telefono"><label for="cTel">Teléfono</label><input id="cTel" type="tel" autocomplete="tel" inputmode="tel" placeholder="600 000 000"><span class="err">Revisa el teléfono.</span></div>
+            </div>
+            <div class="f" data-f="email"><label for="cEmail">Email</label><input id="cEmail" type="email" autocomplete="email"><span class="err">Revisa el email.</span></div>
+            <div class="f" data-f="registro"><span class="lbl" id="cRegLbl">¿Tiene registro turístico?</span>
+              <div class="chips" id="cRegSeg" role="group" aria-labelledby="cRegLbl"><button type="button" data-v="si" aria-pressed="false">Sí</button><button type="button" data-v="tramite" aria-pressed="false">En trámite</button><button type="button" data-v="no" aria-pressed="false">No</button></div>
+              <span class="err">Elige una opción.</span></div>
+            <div class="f" data-f="n_alojamientos"><span class="lbl" id="cAlLbl">Alojamientos</span>
+              <div class="chips" id="cAlSeg" role="group" aria-labelledby="cAlLbl"><button type="button" data-v="1" aria-pressed="false">1</button><button type="button" data-v="2-3" aria-pressed="false">2-3</button><button type="button" data-v="4-10" aria-pressed="false">4-10</button><button type="button" data-v="10+" aria-pressed="false">Más de 10</button></div>
+              <span class="err">Elige una opción.</span></div>
+            <div class="f"><label for="cMsg">¿Algo que debamos saber? <span class="o">(opcional)</span></label><textarea id="cMsg" rows="3" placeholder="Zona, enlace del anuncio, si trabajas con gestora…"></textarea></div>
+            <div class="hp" aria-hidden="true"><label for="cWeb">Web</label><input id="cWeb" tabindex="-1" autocomplete="off"></div>
+            <label class="check" id="cConsentWrap"><input type="checkbox" id="cConsent"><span id="cConsentTxt">Acepto que Revenue Managers Spain y su partner comercial traten mis datos para contactarme por teléfono, WhatsApp o email sobre este servicio, según la <a href="#/privacidad">política de privacidad</a>.</span></label>
+            <p class="msg" id="cMsgBox" hidden></p>
+            <button type="submit" class="btn btn-dark btn-block" id="cBtn"><span>Quiero que me llaméis</span> <span class="arr" aria-hidden="true">→</span></button>
+          </form>
+        </div>
+        <div class="ok" id="cOk" hidden>
+          <span class="tick" aria-hidden="true"></span>
+          <h3>Recibido. Te llamamos pronto.</h3>
+          <p class="muted">En menos de 24 horas laborables. Mientras, puedes calcular tu potencial para ir adelantando.</p>
+          <a href="#/inicio/calculadora" class="btn btn-line">Ir a la calculadora</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================ PRIVACIDAD ============================ -->
+<div class="page" data-page="privacidad" hidden>
+  <section class="ph">
+    <div class="wrap" style="max-width:820px">
+      <h1 style="font-size:clamp(40px,5vw,60px)">Política de privacidad</h1>
+      <div style="display:grid; gap:16px; margin-top:32px; color:var(--ink-2)">
+        <p><span class="ph-hold">[Plantilla: revisar con un asesor antes de publicar]</span></p>
+        <p><b>Responsable:</b> Revenue Managers Spain, <span class="ph-hold">[razón social, NIF, domicilio, email]</span>.</p>
+        <p><b>Finalidad:</b> preparar el informe de rentabilidad solicitado y contactarte por teléfono, WhatsApp o email en relación con el servicio de revenue management.</p>
+        <p><b>Legitimación:</b> tu consentimiento, que puedes retirar en cualquier momento.</p>
+        <p><b>Destinatarios:</b> <span class="ph-hold">[partner comercial]</span>, encargado de la atención comercial, y proveedores tecnológicos con alojamiento de datos en la Unión Europea.</p>
+        <p><b>Conservación:</b> mientras exista relación comercial o hasta que pidas la supresión; como máximo, <span class="ph-hold">[12]</span> meses sin actividad.</p>
+        <p><b>Derechos:</b> acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <span class="ph-hold">[email]</span>. Puedes reclamar ante la Agencia Española de Protección de Datos.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+</main>
+
+<a href="#/inicio/calculadora" class="btn btn-dark mcta" id="mCta">Calcula tu potencial <span class="arr" aria-hidden="true">→</span></a>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a href="#/inicio" class="logo"><span class="mk" aria-hidden="true">RM</span><span class="wm">Revenue Managers<span>Spain</span></span></a>
+        <p class="muted" style="margin-top:16px; font-size:15px; max-width:32ch">Revenue management para viviendas turísticas. Empezamos en Bilbao y Bizkaia.</p>
+      </div>
+      <div><h4>Empresa</h4><ul><li><a href="#/servicio">Servicio</a></li><li><a href="#/nosotros">Nosotros</a></li><li><a href="#/contacto">Contacto</a></li></ul></div>
+      <div><h4>Propietarios</h4><ul><li><a href="#/inicio/calculadora">Calculadora</a></li><li><a href="#/inicio/como-funciona">Cómo funciona</a></li><li><a href="#/inicio/faq">Preguntas</a></li></ul></div>
+      <div><h4>Legal</h4><ul><li><a href="#/privacidad">Privacidad</a></li><li><a href="#/privacidad">Aviso legal</a></li><li><a href="#/privacidad">Cookies</a></li></ul></div>
+    </div>
+    <div class="foot-b"><span>© 2026 Revenue Managers Spain</span><button type="button" class="theme" id="themeBtn">Tema: sistema</button></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  /* ============ CONFIG ============ */
+  var API = "https://johifftubhrylhcerkfn.supabase.co/functions/v1/submit-lead";
+  var fmt;
+  try { fmt = new Intl.NumberFormat("es-ES", {maximumFractionDigits:0, useGrouping:"always"}); fmt.format(1000); }
+  catch(e){ fmt = new Intl.NumberFormat("es-ES", {maximumFractionDigits:0}); }
+  function eur(n){ return fmt.format(Math.round(n)) + " €"; }
+  function $(s, r){ return (r||document).querySelector(s); }
+  function $$(s, r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var utm = {};
+  try { var sp = new URLSearchParams(location.search); ["utm_source","utm_medium","utm_campaign","utm_content"].forEach(function(k){ if (sp.get(k)) utm[k] = sp.get(k); }); } catch(e){}
+
+  /* ============ ROUTER ============
+     Rutas: #/pagina  o  #/pagina/seccion  (p. ej. #/inicio/calculadora).
+     Todos los enlaces internos se interceptan: cambian de página y hacen scroll suave
+     aunque la URL no cambie (el fallo de la versión anterior). */
+  var PAGES = {inicio:"Revenue Managers Spain", servicio:"Servicio · Revenue Managers Spain", nosotros:"Nosotros · Revenue Managers Spain", contacto:"Contacto · Revenue Managers Spain", privacidad:"Privacidad · Revenue Managers Spain"};
+  var current = null;
+
+  function parse(h){
+    var parts = String(h || "").replace(/^#\/?/, "").split("/");
+    var page = PAGES[parts[0]] ? parts[0] : (parts[0] === "calculadora" ? "inicio" : "inicio");
+    var anchor = parts[1] || (parts[0] === "calculadora" ? "calculadora" : "");
+    return {page:page, anchor:anchor};
+  }
+  function scrollToEl(el){
+    var hdr = $("#hdr").offsetHeight || 72;
+    var y = el.getBoundingClientRect().top + window.pageYOffset - hdr - 12;
+    window.scrollTo({top:Math.max(0,y), behavior: reduce ? "auto" : "smooth"});
+  }
+  function show(h, fromClick){
+    var r = parse(h);
+    var changed = r.page !== current;
+    if (changed){
+      $$("[data-page]").forEach(function(p){ p.hidden = p.getAttribute("data-page") !== r.page; });
+      $$(".links a").forEach(function(a){ if (a.getAttribute("data-route") === r.page) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+      document.title = PAGES[r.page];
+      current = r.page;
+    }
+    closeMenu();
+    var target = r.anchor ? document.getElementById(r.anchor) : null;
+    if (target){
+      // esperar a que la página recién mostrada tenga layout
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ scrollToEl(target); }); });
+    } else if (changed || fromClick){
+      window.scrollTo({top:0, behavior: changed || reduce ? "auto" : "smooth"});
+    }
+    setTimeout(onScroll, 60);
+  }
+  function setHash(h){
+    try { if (location.hash !== h) history.pushState(null, "", h); }
+    catch(e){ try { location.hash = h; } catch(_){} }
+  }
+  document.addEventListener("click", function(e){
+    var a = e.target.closest && e.target.closest('a[href^="#/"]');
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    var h = a.getAttribute("href");
+    setHash(h);
+    show(h, true);
+  });
+  window.addEventListener("popstate", function(){ show(location.hash); });
+  window.addEventListener("hashchange", function(){ show(location.hash); });
+
+  /* menu */
+  function closeMenu(){ $("#links").classList.remove("open"); $("#burger").setAttribute("aria-expanded","false"); }
+  $("#burger").addEventListener("click", function(){ var o = $("#links").classList.toggle("open"); this.setAttribute("aria-expanded", o ? "true" : "false"); });
+
+  /* header border + floating CTA */
+  function onScroll(){
+    $("#hdr").classList.toggle("on", window.pageYOffset > 8);
+    var hide = current === "contacto";
+    if (current === "inicio"){
+      var c = $("#calculadora").getBoundingClientRect(), e = $("#est").getBoundingClientRect();
+      if ((c.top < innerHeight && c.bottom > 0) || (e.top < innerHeight && e.bottom > 0)) hide = true;
+    }
+    $("#mCta").classList.toggle("hide", hide);
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+
+  /* theme */
+  var themes = ["sistema","claro","oscuro"], ti = 0;
+  $("#themeBtn").addEventListener("click", function(){
+    ti = (ti + 1) % 3; var t = themes[ti];
+    if (t === "sistema") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t === "claro" ? "light" : "dark");
+    this.textContent = "Tema: " + t;
+  });
+
+  /* CTA background grid */
+  $$(".cta-grid").forEach(function(g){ var s = ""; for (var i=0;i<35;i++) s += "<i></i>"; g.innerHTML = s; });
+
+  /* ============ DEMO CALENDAR ============ */
+  var market = [], events = {4:1, 10:1, 11:1, 12:1, 25:1};
+  for (var d=1; d<=31; d++){
+    var dow = (d + 1) % 7; // 0 = lunes; el 1 de julio cae en miércoles
+    var base = 168 + (dow===4 ? 36 : dow===5 ? 44 : dow===6 ? 6 : 0) + Math.round(Math.sin(d*1.7)*9);
+    if (events[d]) base += 95 + (d%3)*20;
+    market.push(base);
+  }
+  var FIX = 150, dyn = false;
+  var booked = market.map(function(m, i){ return (i*7) % 10 !== 3; });
+  function drawCal(){
+    var html = "", total = 0, lost = 0, cheap = 0;
+    html += '<div class="cell off"></div><div class="cell off"></div>';
+    market.forEach(function(m, i){
+      var dd = i + 1, price = dyn ? Math.round(m*0.97/5)*5 : FIX, sold = dyn ? booked[i] : true;
+      if (sold) total += price;
+      var low = !dyn && m - price > 15; if (low){ lost += m - price; cheap++; }
+      var cls = "cell" + (low ? " low" : "") + (dyn && price > FIX + 10 ? " hi" : "");
+      html += '<div class="'+cls+'"><span class="d">'+dd+'</span>'+(events[dd] ? '<span class="ev"></span>' : '')+'<span class="p">'+price+'</span></div>';
+    });
+    html += '<div class="cell off"></div><div class="cell off"></div>';
+    $("#calGrid").innerHTML = html;
+    $("#calTotal").textContent = eur(total);
+    var k = $("#calDeltaK"), v = $("#calDelta");
+    if (dyn){ k.textContent = "Frente a precio fijo"; v.textContent = "+" + eur(total - FIX*31); v.className = "num up"; }
+    else { k.textContent = cheap + " noches vendidas baratas"; v.textContent = "−" + eur(lost); v.className = "num dn"; }
+  }
+  $("#tFix").addEventListener("click", function(){ dyn = false; this.setAttribute("aria-pressed","true"); $("#tDyn").setAttribute("aria-pressed","false"); drawCal(); });
+  $("#tDyn").addEventListener("click", function(){ dyn = true; this.setAttribute("aria-pressed","true"); $("#tFix").setAttribute("aria-pressed","false"); drawCal(); });
+  drawCal();
+
+  /* ============ CALCULATOR ============ */
+  // Misma fórmula que la Edge Function (el servidor la recalcula al guardar).
+  var ZONAS = {abando:{adr:1.1,occ:.7}, casco:{adr:1.05,occ:.72}, bilbao_otro:{adr:.85,occ:.66}, costa:{adr:1,occ:.6}, euskadi:{adr:.9,occ:.62}};
+  var DORMS = {1:.8, 2:1, 3:1.25, 4:1.5};
+  var UPLIFT = {fijo:.22, manual:.15, plataforma:.12, gestora:.1, dinamica:.06, nose:.18};
+  function estimar(s){
+    var z = ZONAS[s.zona], adrM = 180 * z.adr * DORMS[s.dorm];
+    var occ = s.ocup / 100, actual = s.precio * occ * 365;
+    var adrPot = (s.precio + 0.35 * Math.max(0, adrM - s.precio)) * (1 + UPLIFT[s.metodo] * 0.6);
+    var occPot = Math.max(occ, z.occ * 0.95); if (occ > .85) occPot = occ - .04; occPot = Math.min(occPot, .92);
+    var pot = Math.min(Math.max(adrPot * occPot * 365, actual * 1.05), actual * 1.45);
+    return {actual:Math.round(actual), potencial:Math.round(pot), mejora:Math.round(pot - actual)};
+  }
+
+  var S = {step:1, zona:null, dorm:2, precio:120, ocup:70, metodo:null, registro:null, n_alojamientos:null, franja:"manana"};
+  var LABELS = {1:"1 / 3 · Zona", 2:"2 / 3 · Tu piso", 3:"3 / 3 · Tus precios", 4:"Resultado"};
+
+  function press(group, value){
+    $$(group + " [data-v]").forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-v") === String(value) ? "true" : "false"); });
+  }
+  function pick(group, key, cb){
+    $$(group + " [data-v]").forEach(function(b){
+      b.addEventListener("click", function(){
+        var v = b.getAttribute("data-v");
+        S[key] = key === "dorm" ? Number(v) : v;
+        press(group, v);
+        var f = b.closest(".f"); if (f) f.classList.remove("bad");
+        if (cb) cb();
+      });
+    });
+  }
+  pick("#zonaOpts", "zona", function(){ sync(); setTimeout(function(){ go(2); }, 240); });
+  pick("#dormSeg", "dorm");
+  pick("#metodoOpts", "metodo", function(){ sync(); setTimeout(function(){ go(4); }, 240); });
+  pick("#regSeg", "registro");
+  pick("#alSeg", "n_alojamientos");
+  pick("#frSeg", "franja");
+
+  var rp = $("#precio"), ro = $("#ocup");
+  function fill(el){ el.style.setProperty("--fill", ((el.value - el.min) / (el.max - el.min) * 100) + "%"); }
+  function onRange(){
+    S.precio = Number(rp.value); S.ocup = Number(ro.value);
+    $("#precioOut").textContent = S.precio + " €";
+    $("#ocupOut").textContent = S.ocup + " %";
+    $("#ocupHint").textContent = "≈ " + Math.round(S.ocup / 100 * 365) + " noches. La media de Bilbao está en el 68 %.";
+    fill(rp); fill(ro);
+  }
+  rp.addEventListener("input", onRange); ro.addEventListener("input", onRange); onRange();
+
+  function canNext(){ return S.step === 1 ? !!S.zona : S.step === 2 ? true : S.step === 3 ? !!S.metodo : false; }
+  function sync(){
+    $("#nextBtn").disabled = !canNext();
+    $("#backBtn").hidden = S.step === 1;
+    $("#nextBtn").hidden = S.step === 4;
+    $("#nextBtn").firstElementChild.textContent = S.step === 3 ? "Ver mi resultado" : "Siguiente";
+    $("#calcMeter").textContent = LABELS[S.step];
+    $("#barFill").style.width = (S.step >= 4 ? 100 : S.step * 33.4) + "%";
+  }
+  function go(n, noScroll){
+    S.step = n;
+    $$("[data-step]").forEach(function(el){ el.hidden = Number(el.getAttribute("data-step")) !== n; });
+    sync();
+    if (n === 4) result();
+    if (!noScroll){
+      var top = $("#calc").getBoundingClientRect().top;
+      if (top < 40 || top > innerHeight * 0.5) scrollToEl($("#calc"));
+    }
+  }
+  $("#nextBtn").addEventListener("click", function(){ if (canNext()) go(S.step === 3 ? 4 : S.step + 1); });
+  $("#backBtn").addEventListener("click", function(){ go(Math.max(1, S.step - 1)); });
+
+  /* hero estimator → salta al paso 2 con los datos ya puestos */
+  $("#est").addEventListener("submit", function(e){
+    e.preventDefault();
+    S.zona = $("#eZona").value; press("#zonaOpts", S.zona);
+    S.dorm = Number($("#eDorm").value); press("#dormSeg", S.dorm);
+    var p = Math.round((Number($("#ePrecio").value) || 120) / 5) * 5; p = Math.min(400, Math.max(40, p));
+    rp.value = p; onRange();
+    go(2, true);
+    setHash("#/inicio/calculadora");
+    requestAnimationFrame(function(){ scrollToEl($("#calc")); });
+  });
+
+  function countUp(el, to, ms){
+    if (reduce){ el.textContent = eur(to); return; }
+    var t0 = performance.now();
+    (function tick(t){ var k = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - k, 3); el.textContent = eur(to * e); if (k < 1) requestAnimationFrame(tick); })(t0);
+  }
+  var SMAX = 80000;
+  function pct(v){ return Math.max(2, Math.min(98, v / SMAX * 100)); }
+  (function(){ var h = ""; [[22110,"25 % peor"],[44839,"Mediana"],[63809,"10 % mejor"]].forEach(function(m){ h += '<span style="left:'+pct(m[0])+'%">'+fmt.format(m[0])+' €<br>'+m[1]+'</span>'; }); $("#ticks").innerHTML = h; })();
+
+  function result(){
+    var r = estimar(S);
+    countUp($("#rPot"), r.potencial, 1100);
+    $("#rDelta").textContent = "↑ +" + Math.round(r.mejora / r.actual * 100) + " % frente a hoy";
+    $("#rNow").textContent = eur(r.actual);
+    $("#rGap").textContent = eur(r.mejora);
+    $("#rMonth").textContent = "+" + eur(r.mejora / 12);
+    $("#rPos").textContent = r.actual < 22110 ? "Hoy estás en el 25 % de pisos de Bilbao que menos factura." : r.actual < 44839 ? "Hoy estás por debajo de la mediana de Bilbao." : r.actual < 63809 ? "Hoy estás por encima de la mediana de Bilbao." : "Hoy estás en el 10 % de pisos que más factura en Bilbao.";
+    $("#pinNow").style.left = "2%"; $("#pinPot").style.left = "2%";
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ $("#pinNow").style.left = pct(r.actual) + "%"; $("#pinPot").style.left = pct(r.potencial) + "%"; }); });
+  }
+
+  /* ============ FORMS → SUPABASE ============ */
+  function normTel(v){ var t = String(v || "").replace(/[^\d+]/g, ""); if (/^\d{9}$/.test(t)) t = "+34" + t; return t; }
+  function validate(root, d){
+    var ok = true;
+    function mark(name, bad){ var f = root.querySelector('[data-f="' + name + '"]'); if (f) f.classList.toggle("bad", bad); if (bad) ok = false; }
+    mark("nombre", (d.nombre || "").length < 2);
+    mark("telefono", !/^\+?\d{9,15}$/.test(d.telefono));
+    mark("email", !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email || ""));
+    mark("registro", !d.registro);
+    mark("n_alojamientos", !d.n_alojamientos);
+    return ok;
+  }
+  function send(payload){
+    return fetch(API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)})
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {ok:r.ok, j:j}; }); });
+  }
+  function submitFlow(opts){
+    var btn = opts.btn, label = btn.firstElementChild, msg = opts.msg, orig = label.textContent;
+    msg.hidden = true;
+    var d = opts.data;
+    Object.keys(utm).forEach(function(k){ d[k] = utm[k]; });
+    var valid = validate(opts.form, d);
+    opts.consentWrap.classList.toggle("bad", !d.consentimiento);
+    if (!valid || !d.consentimiento){ msg.textContent = "Revisa los campos marcados en rojo."; msg.hidden = false; return; }
+    btn.disabled = true; label.textContent = "Enviando…";
+    send(d).then(function(res){
+      if (!res.ok || !res.j.ok) throw new Error((res.j && res.j.error) || "Error");
+      opts.onOk(d);
+    }).catch(function(err){
+      msg.textContent = err && err.message && err.message !== "Failed to fetch" && err.message !== "Error" ? err.message : "No hemos podido enviar tus datos. Comprueba tu conexión e inténtalo de nuevo.";
+      msg.hidden = false;
+    }).then(function(){ btn.disabled = false; label.textContent = orig; });
+  }
+
+  $("#leadForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    submitFlow({
+      form:this, btn:$("#leadBtn"), msg:$("#leadMsg"), consentWrap:$("#lConsentWrap"),
+      data:{
+        tipo:"calculadora", nombre:$("#lNombre").value.trim(), telefono:normTel($("#lTel").value), email:$("#lEmail").value.trim(),
+        zona:S.zona, dormitorios:S.dorm, metodo_precio:S.metodo, precio_noche:S.precio, ocupacion:S.ocup / 100,
+        registro:S.registro, n_alojamientos:S.n_alojamientos, anuncio_url:$("#lAnuncio").value.trim(), franja:S.franja,
+        consentimiento:$("#lConsent").checked, consentimiento_texto:$("#lConsentTxt").textContent.trim(),
+        web_empresa:$("#lWeb").value, pagina:location.href.slice(0, 200)
+      },
+      onOk:function(d){
+        $("#gateForm").hidden = true; $("#gateOk").hidden = false;
+        $("#okTitle").textContent = "Recibido, " + d.nombre.split(" ")[0] + ".";
+        $("#okText").textContent = d.registro === "no"
+          ? "Te enviaremos por email una guía sobre el registro turístico. Cuando tu piso esté inscrito, preparamos el informe."
+          : "Te llamaremos por la " + ({manana:"mañana", mediodia:"hora de comer", tarde:"tarde"})[d.franja] + ", en menos de 24 horas laborables.";
+        try { if (window.fbq) window.fbq("track", "Lead"); } catch(_){}
+      }
+    });
+  });
+
+  var C = {registro:null, n_alojamientos:null};
+  function cPick(group, key){ $$(group + " [data-v]").forEach(function(b){ b.addEventListener("click", function(){ C[key] = b.getAttribute("data-v"); press(group, C[key]); b.closest(".f").classList.remove("bad"); }); }); }
+  cPick("#cRegSeg", "registro"); cPick("#cAlSeg", "n_alojamientos");
+  $("#contactForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    submitFlow({
+      form:this, btn:$("#cBtn"), msg:$("#cMsgBox"), consentWrap:$("#cConsentWrap"),
+      data:{
+        tipo:"contacto", nombre:$("#cNombre").value.trim(), telefono:normTel($("#cTel").value), email:$("#cEmail").value.trim(),
+        registro:C.registro, n_alojamientos:C.n_alojamientos, mensaje:$("#cMsg").value.trim(),
+        consentimiento:$("#cConsent").checked, consentimiento_texto:$("#cConsentTxt").textContent.trim(),
+        web_empresa:$("#cWeb").value, pagina:location.href.slice(0, 200)
+      },
+      onOk:function(){ $("#cFormWrap").hidden = true; $("#cOk").hidden = false; try { if (window.fbq) window.fbq("track", "Contact"); } catch(_){} }
+    });
+  });
+
+  sync();
+  show(location.hash || "#/inicio");
+})();
+</script>
+</body>
+</html>
